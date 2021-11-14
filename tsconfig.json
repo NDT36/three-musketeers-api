@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "lib": ["es5", "es6"],
+    "target": "es5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "sourceMap": false,
+    "types": ["node"],
+    "typeRoots": ["./src/types", "node_modules/@types"],
+    "baseUrl": "./src",
+    "paths": {
+      "$helpers/*": ["helpers/*"],
+      "$middlewares/*": ["middlewares/*"],
+      "$controllers/*": ["controllers/*"],
+      "$validators/*": ["validators/*"],
+      "$types/*": ["types/*"],
+      "$config": ["config"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/*.test.ts"]
+}
