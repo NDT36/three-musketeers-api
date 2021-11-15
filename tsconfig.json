@@ -19,6 +19,8 @@
       "$middlewares/*": ["middlewares/*"],
       "$controllers/*": ["controllers/*"],
       "$validators/*": ["validators/*"],
+      "$services/*": ["services/*"],
+      "$models/*": ["models/*"],
       "$types/*": ["types/*"],
       "$config": ["config"]
     }
