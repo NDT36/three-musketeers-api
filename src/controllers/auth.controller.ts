@@ -3,8 +3,20 @@ import { error, fail, success } from '$helpers/response';
 import { Express, Request, Response } from 'express';
 import { verifyAccessToken } from '$middlewares/auth.middleware';
 import { validate } from '$helpers/validate';
-import { changePasswordSchema, loginSchema, refreshTokenSchema, registerSchema } from '$validators/auth';
-import { changePassword, login, refreshToken, register } from '$services/auth.service';
+import {
+  changePasswordSchema,
+  loginSchema,
+  refreshTokenSchema,
+  registerSchema,
+  requestLinkForgotPasswordSchema,
+} from '$validators/auth';
+import {
+  changePassword,
+  login,
+  refreshToken,
+  register,
+  requestLinkForgotPassword,
+} from '$services/auth.service';
 import { ErrorCode } from '$types/enum';
 const logger = log('authController');
 
@@ -61,5 +73,17 @@ export default function authController(app: Express) {
     }
   });
 
+  app.post('/api/link-forgot-password', [], async (req: Request, res: Response) => {
+    try {
+      const body = req.body;
+      validate(requestLinkForgotPasswordSchema, body);
+
+      const results = await requestLinkForgotPassword(body.email);
+      return success(res, results);
+    } catch (err) {
+      logger.error(err);
+      return fail(res, err);
+    }
+  });
   app.post('/api/forgot-password', [], async (req: Request, res: Response) => {});
 }
