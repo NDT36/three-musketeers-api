@@ -10,6 +10,7 @@ import logRequest from '$middlewares/logRequest';
 import limiter from '$middlewares/limiter';
 import authController from '$controllers/auth.controller';
 import userController from '$controllers/user.controller';
+import nftController from '$controllers/nft.controller';
 const logger = log('Index');
 
 const app = express();
@@ -36,6 +37,7 @@ createMongoConnection()
     /* -------------------------------------------------------------------------- */
     authController(app);
     userController(app);
+    nftController(app);
 
     /* -------------------------------------------------------------------------- */
     /*                                 Run server                                 */

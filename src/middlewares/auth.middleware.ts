@@ -33,10 +33,11 @@ export function verifyAccessToken(req: Request, res: Response, next: NextFunctio
           return next();
         }
 
-        throw error(ErrorCode.Token_Expired, 401, { note: 'Invalid access token!' });
+        throw error(ErrorCode.Token_Expired, 401, { note: 'Invalid access token type!' });
       })
-      .catch((e) => {
-        throw error(ErrorCode.Token_Expired, 401, { note: 'Invalid access token!' });
+      .catch(() => {
+        const err = error(ErrorCode.Token_Expired, 401, { note: 'Invalid access token!' });
+        return fail(res, err, 401);
       });
   } catch (err) {
     logger.error(err);

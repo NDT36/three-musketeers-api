@@ -4,6 +4,7 @@ import { ErrorCode } from '$types/enum';
 import { error } from './response';
 const logger = log('Validate');
 import addFormats from 'ajv-formats';
+import { head } from 'lodash';
 // import { PublicKey } from '@solana/web3.js';
 
 const AjvInstance = new AJV();
@@ -27,5 +28,5 @@ export function validate(schemaKeyRef: AjvSchema, data: any) {
   /*                               Validate failed                              */
   /* -------------------------------------------------------------------------- */
   logger.error(AjvInstance.errors);
-  throw error(ErrorCode.Invalid_Input, 422, { payload: AjvInstance.errors }); // 422 Unprocessable Entity
+  throw error(ErrorCode.Invalid_Input, 422, head(AjvInstance.errors)); // 422 Unprocessable Entity
 }

@@ -32,3 +32,8 @@ export enum IsPublicProfile {
   PUBLIC = 1,
   NOT_PUBLIC = 0,
 }
+
+export enum CommonStatus {
+  ACTIVE = 1,
+  INACTIVE = 0,
+}

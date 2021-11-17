@@ -11,7 +11,7 @@ export const fail = (res: Response, error: any, status = 400) => {
   if (error?.errorMessage) {
     const status = error?.status || result.status;
     const payload = error?.payload || {};
-    Object.assign(result, { status, message: error?.errorMessage, ...payload });
+    Object.assign(result, { status, message: error?.errorMessage, payload });
   } else {
     Object.assign(result, { message: ErrorCode.Unknown_Error });
   }
