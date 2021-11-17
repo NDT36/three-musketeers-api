@@ -1,6 +1,6 @@
 export const loginSchema: AjvSchema = {
   type: 'object',
-  required: ['email', 'password'],
+  required: ['email', 'password', 'walletAddress'],
   additionalProperties: false,
   properties: {
     email: {
@@ -11,6 +11,11 @@ export const loginSchema: AjvSchema = {
       type: 'string',
       minLength: 6,
       maxLength: 32,
+    },
+    walletAddress: {
+      type: 'string',
+      minLength: 44,
+      maxLength: 44,
     },
   },
 };

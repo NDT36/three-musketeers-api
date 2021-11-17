@@ -9,6 +9,7 @@ import config from '$config';
 import logRequest from '$middlewares/logRequest';
 import limiter from '$middlewares/limiter';
 import authController from '$controllers/auth.controller';
+import userController from '$controllers/user.controller';
 const logger = log('Index');
 
 const app = express();
@@ -34,13 +35,16 @@ createMongoConnection()
     /*                            Register API endpoint                           */
     /* -------------------------------------------------------------------------- */
     authController(app);
+    userController(app);
 
     /* -------------------------------------------------------------------------- */
     /*                                 Run server                                 */
     /* -------------------------------------------------------------------------- */
     http.listen(config.SERVER.PORT, () => {
       logger.info(
-        `Express server started on port ${process.env.PORT || 3000}. Environment: ${process.env.NODE_ENV || 'dev'}`
+        `Express server started on port ${process.env.PORT || 3000}. Environment: ${
+          process.env.NODE_ENV || 'dev'
+        }`
       );
     });
   })

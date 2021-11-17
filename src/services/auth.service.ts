@@ -15,26 +15,31 @@ const logger = log('User model');
  * @returns accressToken and refreshToken
  */
 export async function login(params: ILogin) {
-  const { email, password } = params;
+  const { email, password, walletAddress } = params;
 
   const User = await UserModel.findOne({ email }, [
     '_id',
     'email',
     'password',
     'status',
+    'walletAddress',
     'refreshToken',
   ]);
-  const userObject = User.toObject();
 
-  if (!userObject) throw error(ErrorCode.Email_Address_Not_Exist);
-  if (userObject.status === UserStatus.INACTIVE) throw error(ErrorCode.User_Blocked);
+  if (!User) throw error(ErrorCode.Email_Address_Not_Exist);
 
-  const isCorrectPassword = compareSync(password, userObject.password);
+  if (User.walletAddress !== walletAddress) {
+    throw error(ErrorCode.Wallet_Connect_Not_Match_With_Account);
+  }
+
+  if (User.status === UserStatus.INACTIVE) throw error(ErrorCode.User_Blocked);
+
+  const isCorrectPassword = compareSync(password, User.password);
   if (!isCorrectPassword) throw error(ErrorCode.Password_Incorrect);
 
   const token = generateToken({
-    _id: String(userObject._id),
-    refreshToken: userObject.refreshToken,
+    _id: String(User._id),
+    refreshToken: User.refreshToken,
   });
 
   /* -------------------------------------------------------------------------- */

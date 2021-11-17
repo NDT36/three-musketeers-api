@@ -10,6 +10,7 @@ export enum ErrorCode {
   Password_Incorrect = 'Password_Incorrect',
   User_Not_Found = 'User_Not_Found',
   Max_Time_For_Retry_Link_Forgot_Password = 'Max_Time_For_Retry_Link_Forgot_Password',
+  Wallet_Connect_Not_Match_With_Account = 'Wallet_Connect_Not_Match_With_Account',
 }
 
 export enum TokenType {

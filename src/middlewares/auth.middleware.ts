@@ -18,7 +18,9 @@ export function verifyAccessToken(req: Request, res: Response, next: NextFunctio
    */
   try {
     if (!token) {
-      throw error(ErrorCode.Missing_Access_Token_In_Header, 401, { note: 'This API needs authorization!' });
+      throw error(ErrorCode.Missing_Access_Token_In_Header, 401, {
+        note: 'This API needs authorization!',
+      });
     }
 
     verifyAsync(token, config.AUTH.SECRET, { algorithm: 'HS256' } as VerifyOptions)
@@ -33,7 +35,7 @@ export function verifyAccessToken(req: Request, res: Response, next: NextFunctio
 
         throw error(ErrorCode.Token_Expired, 401, { note: 'Invalid access token!' });
       })
-      .catch(() => {
+      .catch((e) => {
         throw error(ErrorCode.Token_Expired, 401, { note: 'Invalid access token!' });
       });
   } catch (err) {
