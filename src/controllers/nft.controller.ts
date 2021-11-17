@@ -4,7 +4,7 @@ import { Express, Request, Response } from 'express';
 import { verifyAccessToken } from '$middlewares/auth.middleware';
 import { validate } from '$helpers/validate';
 import { createNftSchema } from '$validators/nft';
-import { createNft, detailNft, listedNft, searchNft } from '$services/nft.service';
+import { createNft, detailNft, listMyNft, listNftSelling, searchNft } from '$services/nft.service';
 import { ErrorCode } from '$types/enum';
 import mongoose from 'mongoose';
 const logger = log('nftController');
@@ -34,9 +34,19 @@ export default function nftController(app: Express) {
     }
   });
 
-  app.get('/api/nft/listed', [verifyAccessToken], async (req: Request, res: Response) => {
+  app.get('/api/nft/selling', [verifyAccessToken], async (req: Request, res: Response) => {
     try {
-      const results = await listedNft(req.userId);
+      const results = await listNftSelling(req.userId);
+      return success(res, results);
+    } catch (err) {
+      logger.error(err);
+      return fail(res, err);
+    }
+  });
+
+  app.get('/api/nft/me', [verifyAccessToken], async (req: Request, res: Response) => {
+    try {
+      const results = await listMyNft(req.userId);
       return success(res, results);
     } catch (err) {
       logger.error(err);

@@ -41,12 +41,29 @@ export async function searchNft(params) {
 }
 
 export async function detailNft(nftId: string) {
-  const result = await NftModel.find({ _id: nftId }).where('status').equals(CommonStatus.ACTIVE);
+  const result = await NftModel.findOne({ _id: nftId, status: CommonStatus.ACTIVE });
 
   return result;
 }
 
-export async function listedNft(userId: string) {
-  const result = await NftModel.find({ owner: userId }).where('status').equals(CommonStatus.ACTIVE);
+export async function listNftSelling(userId: string) {
+  const result = await NftModel.find({
+    owner: userId,
+    status: CommonStatus.ACTIVE,
+    sellingStatus: true,
+  });
+  return result;
+}
+
+export async function listMyNft(userId: string) {
+  const result = await NftModel.find({
+    owner: userId,
+    status: CommonStatus.ACTIVE,
+  });
+  return result;
+}
+
+export async function listNftInWallet(userId: string) {
+  const result = await NftModel.find({ owner: userId, status: CommonStatus.ACTIVE });
   return result;
 }
