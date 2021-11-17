@@ -7,7 +7,7 @@ export interface INft extends Document {
   ownerWallet: string;
   creatoraWallet: string;
   isListed: Boolean;
-  owner: string;
+  owner: string | Schema.Types.ObjectId;
   /**title. Maxlength: 20 */
   title: string;
   /**shortDescription. Maxlength: 64 */
@@ -18,6 +18,7 @@ export interface INft extends Document {
   image: string;
   updateAt: number;
   createdAt: number;
+  soldAt: number;
   status: number;
   sellingStatus: boolean;
   price: number;
@@ -34,15 +35,16 @@ export const NftSchema = new Schema({
   owner: { type: String },
   ownerWallet: { type: String },
   creator: { type: String },
-  creatoraWallet: { type: String },
+  creatorWallet: { type: String },
   sellingStatus: { type: Boolean, default: false },
+  soldAt: { type: Number },
   price: { type: Number },
-  updateAt: { type: Number, default: Date.now },
+  updatedAt: { type: Number, default: Date.now },
   createdAt: { type: Number, default: Date.now },
 });
 
 NftSchema.pre('save', function (next) {
-  this.updateAt = Date.now();
+  this.updatedAt = Date.now();
   next();
 });
 

@@ -5,7 +5,7 @@ import { verifyAccessToken } from '$middlewares/auth.middleware';
 import { validate } from '$helpers/validate';
 import { updateProfileSchema } from '$validators/user';
 import { isEmpty } from 'lodash';
-import { getUserProfile, updateUserProfile } from '$services/user.service';
+import { getUserProfile, hisotryTransaction, updateUserProfile } from '$services/user.service';
 const logger = log('userController');
 
 export default function userController(app: Express) {
@@ -25,6 +25,16 @@ export default function userController(app: Express) {
   app.get('/api/profile', [verifyAccessToken], async (req: Request, res: Response) => {
     try {
       const results = await getUserProfile(req.userId);
+      return success(res, results);
+    } catch (err) {
+      logger.error(err);
+      return fail(res, err);
+    }
+  });
+
+  app.get('/api/transaction-hisotry', [verifyAccessToken], async (req: Request, res: Response) => {
+    try {
+      const results = await hisotryTransaction(req.userId, req.query);
       return success(res, results);
     } catch (err) {
       logger.error(err);

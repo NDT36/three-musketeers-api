@@ -3,8 +3,16 @@ import { error, fail, success } from '$helpers/response';
 import { Express, Request, Response } from 'express';
 import { verifyAccessToken } from '$middlewares/auth.middleware';
 import { validate } from '$helpers/validate';
-import { createNftSchema } from '$validators/nft';
-import { createNft, detailNft, listMyNft, listNftSelling, searchNft } from '$services/nft.service';
+import { createNftSchema, sellSchema } from '$validators/nft';
+import {
+  buyNft,
+  createNft,
+  detailNft,
+  listMyNft,
+  listNftSelling,
+  searchNft,
+  sellNft,
+} from '$services/nft.service';
 import { ErrorCode } from '$types/enum';
 import mongoose from 'mongoose';
 const logger = log('nftController');
@@ -61,6 +69,39 @@ export default function nftController(app: Express) {
         throw error(ErrorCode.Invalid_Input, 422, { note: 'Missing nftId/Invalid object id' });
       }
       const results = await detailNft(nftId);
+      return success(res, results);
+    } catch (err) {
+      logger.error(err);
+      return fail(res, err);
+    }
+  });
+
+  app.post('/api/nft/buy/:nftId', [verifyAccessToken], async (req: Request, res: Response) => {
+    try {
+      const nftId = req.params.nftId as string;
+      if (!mongoose.isValidObjectId(nftId)) {
+        throw error(ErrorCode.Invalid_Input, 422, { note: 'Missing nftId/Invalid object id' });
+      }
+      const results = await buyNft(req.userId, nftId);
+      return success(res, results);
+    } catch (err) {
+      logger.error(err);
+      return fail(res, err);
+    }
+  });
+
+  app.post('/api/nft/sell/:nftId', [verifyAccessToken], async (req: Request, res: Response) => {
+    try {
+      const nftId = req.params.nftId as string;
+      if (!mongoose.isValidObjectId(nftId)) {
+        throw error(ErrorCode.Invalid_Input, 422, { note: 'Missing nftId/Invalid object id' });
+      }
+      validate(sellSchema, req.body);
+      if (req.body.price <= 0) {
+        throw error(ErrorCode.Invalid_Input, 422, { note: 'price must be greater than 0' });
+      }
+
+      const results = await sellNft(req.userId, { nftId, price: req.body.price });
       return success(res, results);
     } catch (err) {
       logger.error(err);

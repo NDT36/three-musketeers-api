@@ -11,6 +11,10 @@ export enum ErrorCode {
   User_Not_Found = 'User_Not_Found',
   Max_Time_For_Retry_Link_Forgot_Password = 'Max_Time_For_Retry_Link_Forgot_Password',
   Wallet_Connect_Not_Match_With_Account = 'Wallet_Connect_Not_Match_With_Account',
+  You_Are_Not_Owner_Of_This_Nft = 'You_Are_Not_Owner_Of_This_Nft',
+  You_Are_Owner_Of_This_Nft = 'You_Are_Owner_Of_This_Nft',
+  Not_Found_Nft = 'Not_Found_Nft',
+  Nft_Not_Selling = 'Nft_Not_Selling',
 }
 
 export enum TokenType {
@@ -24,6 +28,11 @@ export enum UserStatus {
 }
 
 export enum ForgotPasswordStatus {
+  ACTIVE = 1,
+  USED = 0,
+}
+
+export enum TransactionHistoryStatus {
   ACTIVE = 1,
   USED = 0,
 }

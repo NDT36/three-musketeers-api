@@ -25,3 +25,15 @@ export const createNftSchema: AjvSchema = {
     },
   },
 };
+
+export const sellSchema: AjvSchema = {
+  type: 'object',
+  required: ['price'],
+  additionalProperties: false,
+  properties: {
+    price: {
+      type: 'number',
+      minimum: 0,
+    },
+  },
+};

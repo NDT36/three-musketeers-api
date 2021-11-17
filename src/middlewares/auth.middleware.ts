@@ -1,7 +1,8 @@
 import config from '$config';
 import log from '$helpers/log';
 import { error, fail } from '$helpers/response';
-import { ErrorCode, TokenType } from '$types/enum';
+import { UserModel } from '$models/UserModel';
+import { ErrorCode, TokenType, UserStatus } from '$types/enum';
 import { NextFunction, Request, Response } from 'express';
 import { verify, VerifyOptions } from 'jsonwebtoken';
 import { promisify } from 'util';
@@ -30,6 +31,17 @@ export function verifyAccessToken(req: Request, res: Response, next: NextFunctio
         /* -------------------------------------------------------------------------- */
         if (decoded.type === TokenType.ACCESS_TOKEN) {
           Object.assign(req, { userId: decoded._id });
+          /* -------------------------------------------------------------------------- */
+          /*                   Check user status before authorization                   */
+          /* -------------------------------------------------------------------------- */
+          const User = await UserModel.findOne({ _id: decoded._id }, ['_id', 'status']).lean();
+          if (User.status === UserStatus.INACTIVE) {
+            return fail(
+              res,
+              error(ErrorCode.User_Blocked, 401, { note: 'User account blocked!' }),
+              401
+            );
+          }
           return next();
         }
 
