@@ -1,6 +1,6 @@
 export const createNftSchema: AjvSchema = {
   type: 'object',
-  required: ['title', 'shortDescription', 'description', 'image'],
+  required: ['title', 'shortDescription', 'description', 'image', 'price'],
   additionalProperties: false,
   properties: {
     title: {
@@ -22,6 +22,14 @@ export const createNftSchema: AjvSchema = {
       type: 'string',
       minLength: 1,
       maxLength: 10000,
+    },
+    price: {
+      type: 'number',
+      minimum: 0,
+    },
+    categoryId: {
+      type: 'string',
+      minLength: 1,
     },
   },
 };

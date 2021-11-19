@@ -14,7 +14,9 @@ export enum ErrorCode {
   You_Are_Not_Owner_Of_This_Nft = 'You_Are_Not_Owner_Of_This_Nft',
   You_Are_Owner_Of_This_Nft = 'You_Are_Owner_Of_This_Nft',
   Not_Found_Nft = 'Not_Found_Nft',
+  Not_Found_Category = 'Not_Found_Category',
   Nft_Not_Selling = 'Nft_Not_Selling',
+  Wrong_Admin_Token = 'Wrong_Admin_Token',
 }
 
 export enum TokenType {

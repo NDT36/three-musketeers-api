@@ -24,6 +24,9 @@ export default function nftController(app: Express) {
   app.post('/api/nft', [verifyAccessToken], async (req: Request, res: Response) => {
     try {
       validate(createNftSchema, req.body);
+      if (req.body.categoryId && !mongoose.isValidObjectId(req.body.categoryId)) {
+        throw error(ErrorCode.Invalid_Input, 422, { note: 'Wrong categoryId' });
+      }
       const results = await createNft(req.userId, req.body);
       return success(res, results);
     } catch (err) {

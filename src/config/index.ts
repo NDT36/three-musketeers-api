@@ -9,6 +9,7 @@ export default {
   },
   AUTH: {
     SECRET: process.env.AUTH_SECRET,
+    ADMIN_TOKEN: process.env.ADMIN_TOKEN,
     SALT_ROUND: Number(process.env.SALT_ROUND),
     TOKEN_TTL: process.env.TOKEN_TTL,
     REFRES_TOKEN_TTL: process.env.REFRES_TOKEN_TTL,

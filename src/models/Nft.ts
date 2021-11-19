@@ -4,6 +4,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface INft extends Document {
   _id: Schema.Types.ObjectId | string;
   userId: string;
+  categoryId: string;
   ownerWallet: string;
   creatoraWallet: string;
   isListed: Boolean;
@@ -25,7 +26,8 @@ export interface INft extends Document {
 }
 
 export const NftSchema = new Schema({
-  userId: { type: Schema.Types.ObjectId, required: true },
+  userId: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
+  categoryId: { type: Schema.Types.ObjectId, ref: 'Category' },
   title: { type: String, length: 20, required: true },
   shortDescription: { type: String, length: 64, required: true },
   description: { type: String, required: true },

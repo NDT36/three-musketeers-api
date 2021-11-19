@@ -1,10 +1,16 @@
 import { error } from '$helpers/response';
+import { CategoryModel } from '$models/Category';
 import { INft, NftModel } from '$models/Nft';
 import { TransactionHistoryModel } from '$models/TransactionhistoryModel';
 import { UserModel } from '$models/UserModel';
 import { CommonStatus, ErrorCode } from '$types/enum';
 
 export async function createNft(userId: string, params: INft) {
+  if (params.categoryId) {
+    const category = await CategoryModel.findOne({ _id: params.categoryId }, ['_id']).lean();
+    if (!category) throw error(ErrorCode.Not_Found_Category);
+  }
+
   const User = await UserModel.findOne({ _id: userId }, ['_id', 'walletAddress']).lean();
   const Nft = new NftModel({
     userId,
@@ -38,6 +44,21 @@ export async function searchNft(params) {
   if (params.title) {
     query.where('title').regex(new RegExp(params.title, 'i'));
     countQuery.where('title').regex(new RegExp(params.title, 'i'));
+  }
+
+  if (params.categoryIds && params.categoryIds.length) {
+    query.where('categoryId').in(params.categoryIds);
+    countQuery.where('categoryId').in(params.categoryIds);
+  }
+
+  if (Number(params.priceFrom) && Number(params.priceFrom) !== 0) {
+    query.where('price').gte(params.priceFrom);
+    countQuery.where('price').gte(params.priceFrom);
+  }
+
+  if (Number(params.priceTo) && Number(params.priceTo) !== 0) {
+    query.where('price').lte(params.priceTo);
+    countQuery.where('price').lte(params.priceTo);
   }
 
   if (takeAfter && takeAfter !== 0) {
