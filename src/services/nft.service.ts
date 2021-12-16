@@ -65,7 +65,7 @@ export async function searchNft(params) {
     query.where('createdAt').lt(takeAfter);
   }
 
-  query.sort('-createdAt');
+  query.limit(pageSize).sort('-createdAt');
   const data = await query.lean().exec();
   const totalItems = await countQuery.lean().count();
   return { data, hasMore: !!data.length, pageSize, totalItems };
