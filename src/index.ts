@@ -12,6 +12,7 @@ import authController from '$controllers/auth.controller';
 import userController from '$controllers/user.controller';
 import nftController from '$controllers/nft.controller';
 import categoryController from '$controllers/category.controller';
+import favoriteController from '$controllers/favorite.controller';
 const logger = log('Index');
 
 const app = express();
@@ -40,6 +41,7 @@ createMongoConnection()
     userController(app);
     nftController(app);
     categoryController(app);
+    favoriteController(app);
 
     /* -------------------------------------------------------------------------- */
     /*                                 Run server                                 */

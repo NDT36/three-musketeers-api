@@ -1,4 +1,4 @@
-import { CommonStatus } from '$types/enum';
+import { CommonStatus, Token } from '$types/enum';
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface INft extends Document {
@@ -23,6 +23,12 @@ export interface INft extends Document {
   status: number;
   sellingStatus: boolean;
   price: number;
+  totalLike: number;
+  totalDislike: number;
+  viewCount: number;
+  token: Token;
+  skin: string;
+  color: string;
 }
 
 export const NftSchema = new Schema({
@@ -41,6 +47,12 @@ export const NftSchema = new Schema({
   sellingStatus: { type: Boolean, default: false },
   soldAt: { type: Number },
   price: { type: Number },
+  totalLike: { type: Number, default: 0, required: true },
+  totalDislike: { type: Number, default: 0, required: true },
+  viewCount: { type: Number, default: 0, required: true },
+  token: { type: String },
+  skin: { type: String },
+  color: { type: String },
   updatedAt: { type: Number, default: Date.now },
   createdAt: { type: Number, default: Date.now },
 });

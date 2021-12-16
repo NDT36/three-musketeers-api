@@ -46,6 +46,21 @@ export async function searchNft(params) {
     countQuery.where('title').regex(new RegExp(params.title, 'i'));
   }
 
+  if (params.skin) {
+    query.where('skin').regex(new RegExp(params.skin, 'i'));
+    countQuery.where('skin').regex(new RegExp(params.skin, 'i'));
+  }
+
+  if (params.color) {
+    query.where('color').regex(new RegExp(params.color, 'i'));
+    countQuery.where('color').regex(new RegExp(params.color, 'i'));
+  }
+
+  if (params.token) {
+    query.where('token').regex(new RegExp(params.token, 'i'));
+    countQuery.where('token').regex(new RegExp(params.token, 'i'));
+  }
+
   if (params.categoryIds && params.categoryIds.length) {
     query.where('categoryId').in(params.categoryIds);
     countQuery.where('categoryId').in(params.categoryIds);
@@ -72,9 +87,14 @@ export async function searchNft(params) {
 }
 
 export async function detailNft(nftId: string) {
-  const result = await NftModel.findOne({ _id: nftId, status: CommonStatus.ACTIVE });
+  const nft = await NftModel.findOne({ _id: nftId, status: CommonStatus.ACTIVE });
 
-  return result;
+  if (nft) {
+    nft.viewCount = nft.viewCount + 1;
+    await nft.save();
+  }
+
+  return nft;
 }
 
 export async function listNftSelling(userId: string) {

@@ -1,6 +1,17 @@
+import { Token } from '$types/enum';
+
 export const createNftSchema: AjvSchema = {
   type: 'object',
-  required: ['title', 'shortDescription', 'description', 'image', 'price'],
+  required: [
+    'title',
+    'shortDescription',
+    'description',
+    'image',
+    'price',
+    'token',
+    'color',
+    'skin',
+  ],
   additionalProperties: false,
   properties: {
     title: {
@@ -30,6 +41,19 @@ export const createNftSchema: AjvSchema = {
     categoryId: {
       type: 'string',
       minLength: 1,
+    },
+    token: {
+      enum: [Token.SOLANA, Token.USDT, Token.RACEFI],
+    },
+    color: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 255,
+    },
+    skin: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 255,
     },
   },
 };

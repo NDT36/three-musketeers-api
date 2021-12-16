@@ -48,3 +48,15 @@ export enum CommonStatus {
   ACTIVE = 1,
   INACTIVE = 0,
 }
+
+export enum FavoriteStatus {
+  LIKE = 1,
+  DISLIKE = 2,
+  NONE = 0,
+}
+
+export enum Token {
+  SOLANA = 'SOLANA',
+  USDT = 'USDT',
+  RACEFI = 'RACEFI',
+}
