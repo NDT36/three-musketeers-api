@@ -9,14 +9,15 @@ export enum ErrorCode {
   User_Blocked = 'User_Blocked',
   Password_Incorrect = 'Password_Incorrect',
   User_Not_Found = 'User_Not_Found',
-  Max_Time_For_Retry_Link_Forgot_Password = 'Max_Time_For_Retry_Link_Forgot_Password',
-  Wallet_Connect_Not_Match_With_Account = 'Wallet_Connect_Not_Match_With_Account',
-  You_Are_Not_Owner_Of_This_Nft = 'You_Are_Not_Owner_Of_This_Nft',
-  You_Are_Owner_Of_This_Nft = 'You_Are_Owner_Of_This_Nft',
-  Not_Found_Nft = 'Not_Found_Nft',
-  Not_Found_Category = 'Not_Found_Category',
-  Nft_Not_Selling = 'Nft_Not_Selling',
-  Wrong_Admin_Token = 'Wrong_Admin_Token',
+  Group_Not_Found = 'Group_Not_Found',
+  You_Are_Not_Member_Of_This_Group = 'You_Are_Not_Member_Of_This_Group',
+  You_Are_Not_Creator_Of_This_Group = 'You_Are_Not_Creator_Of_This_Group',
+  Member_Duplicate = 'Member_Duplicate',
+  Target_User_Contain_Someone_Not_In_This_Group = 'Target_User_Contain_Someone_Not_In_This_Group',
+  Transaction_Not_Found = 'Transaction_Not_Found',
+  Category_Not_Found = 'Category_Not_Found',
+  Access_Denided = 'Access_Denided',
+  Category_Name_Already_Exist = 'Category_Name_Already_Exist',
 }
 
 export enum TokenType {
@@ -29,34 +30,26 @@ export enum UserStatus {
   INACTIVE = 0,
 }
 
-export enum ForgotPasswordStatus {
-  ACTIVE = 1,
-  USED = 0,
-}
-
-export enum TransactionHistoryStatus {
-  ACTIVE = 1,
-  USED = 0,
-}
-
-export enum IsPublicProfile {
-  PUBLIC = 1,
-  NOT_PUBLIC = 0,
-}
-
 export enum CommonStatus {
   ACTIVE = 1,
   INACTIVE = 0,
-}
-
-export enum FavoriteStatus {
-  LIKE = 1,
-  DISLIKE = 2,
-  NONE = 0,
 }
 
 export enum Token {
   SOLANA = 'SOLANA',
   USDT = 'USDT',
   RACEFI = 'RACEFI',
+}
+
+export enum TransactionType {
+  EXPENSE = 1,
+  INCOME = 2,
+  LEND = 3,
+}
+
+export enum CategoryType {
+  COMMON = 1,
+  FOOD = 2,
+  GIFT = 3,
+  OTHER = 4,
 }

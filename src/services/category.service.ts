@@ -1,34 +1,49 @@
-import { CategoryModel, ICategory } from '$models/Category';
-import { CommonStatus } from '$types/enum';
+import { error } from '$helpers/response';
+import { CategoryModel } from '$models/CategoryModel';
+import { CategoryType, ErrorCode } from '$types/enum';
 
-export async function createCategory(params: ICategory) {
-  const Category = new CategoryModel({
+interface ICreateCategory {
+  name: string;
+  type: CategoryType;
+}
+export async function createCategory(userId: string, params: ICreateCategory) {
+  const category = await CategoryModel.findOne({ name: params.name });
+  if (category) throw error(ErrorCode.Category_Name_Already_Exist);
+
+  const newCategory = new CategoryModel({
+    createdBy: userId,
     ...params,
   });
 
-  const result = await Category.save();
-  return result.toObject();
+  return await newCategory.save();
 }
 
-export async function listCategory(params) {
-  const query = CategoryModel.find({ status: CommonStatus.ACTIVE });
+interface IUpdateCategory {
+  name: string;
+  type: CategoryType;
+}
+export async function updateCategory(userId: string, categoryId: string, params: IUpdateCategory) {
+  const category = await CategoryModel.findOne({ _id: categoryId });
+  if (!category) throw error(ErrorCode.Category_Not_Found);
 
-  if (params.name) {
-    query.where('name').regex(new RegExp(params.name, 'i'));
-  }
+  const newcategory = await CategoryModel.findOne({ name: params.name });
+  if (newcategory) throw error(ErrorCode.Category_Name_Already_Exist);
 
-  if (params.status && params.status.length) {
-    query.where('status').in(params.status);
-  }
+  Object.assign(category, { ...params });
 
-  const result = query.lean().exec();
-  return result;
+  return await category.save();
 }
 
-export async function updateCategory(categoryId: string, params: ICategory) {
-  const Category = await CategoryModel.findOne({ _id: categoryId });
-  if (params.hasOwnProperty('name')) Category.name = params.name;
-  if (params.hasOwnProperty('status')) Category.status = params.status;
-  const result = await Category.save();
-  return result.toObject();
+interface IListCategory {
+  keyword?: string;
+  status?: string[];
+}
+export async function listCategory(params: IListCategory) {
+  const condition = {};
+
+  if (params.keyword) {
+    Object.assign(condition, { name: { $regex: params.keyword } });
+  }
+
+  return await CategoryModel.find(condition);
 }

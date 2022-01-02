@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import { ErrorCode } from '$types/enum';
 
-export const success = (res: Response, result = {}, status = 200, payload = {}) => {
+export const success = (res: Response, result = {}, payload = {}, status = 200) => {
   res.status(status).send({ success: true, status, data: result, ...payload });
 };
 

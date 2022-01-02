@@ -1,51 +1,45 @@
 import log from '$helpers/log';
 import { error, fail, success } from '$helpers/response';
 import { Express, Request, Response } from 'express';
-import { verifyAdminToken } from '$middlewares/auth.middleware';
 import { validate } from '$helpers/validate';
-import { isEmpty } from 'lodash';
-import { createCatgorySchema, updateCatgorySchema } from '$validators/category';
+import { verifyAccessToken } from '$middlewares/auth.middleware';
 import { createCategory, listCategory, updateCategory } from '$services/category.service';
-import mongoose from 'mongoose';
+import { createCategorySchema, updateCategorySchema } from '$validators/category';
 import { ErrorCode } from '$types/enum';
 const logger = log('categoryController');
 
 export default function categoryController(app: Express) {
-  app.get('/api/category', [], async (req: Request, res: Response) => {
+  app.get('/category/list', [], async (req: Request, res: Response) => {
     try {
-      const results = await listCategory(req.query);
-      return success(res, results);
+      const profile = await listCategory(req.query);
+      return success(res, profile);
     } catch (err) {
       logger.error(err);
       return fail(res, err);
     }
   });
 
-  app.post('/api/category', [verifyAdminToken], async (req: Request, res: Response) => {
+  app.post('/category', [verifyAccessToken], async (req: Request, res: Response) => {
     try {
-      validate(createCatgorySchema, req.body);
-      if (isEmpty(req.body)) return success(res);
-
-      const results = await createCategory(req.body);
-      return success(res, results);
+      validate(createCategorySchema, req.body);
+      const profile = await createCategory(req.userId, req.body);
+      return success(res, profile);
     } catch (err) {
       logger.error(err);
       return fail(res, err);
     }
   });
 
-  app.put('/api/category/:categoryId', [verifyAdminToken], async (req: Request, res: Response) => {
+  app.put('/category/:categoryId', [verifyAccessToken], async (req: Request, res: Response) => {
     try {
-      const categoryId = req.params.categoryId;
-      if (!mongoose.isValidObjectId(categoryId)) {
-        throw error(ErrorCode.Invalid_Input, 422, { note: 'Wrong categoryId' });
+      if (!req.params.categoryId) {
+        throw error(ErrorCode.Invalid_Input, 422, {
+          notes: 'Missing categoryId in URL params',
+        });
       }
-
-      validate(updateCatgorySchema, req.body);
-      if (isEmpty(req.body)) return success(res);
-
-      await updateCategory(categoryId, req.body);
-      return success(res);
+      validate(updateCategorySchema, req.body);
+      const profile = await updateCategory(req.userId, req.params.categoryId, req.body);
+      return success(res, profile);
     } catch (err) {
       logger.error(err);
       return fail(res, err);

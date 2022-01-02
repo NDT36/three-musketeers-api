@@ -15,6 +15,9 @@ tmp
 dist
 .env
 
+// Firebase service account
+three-musketeers-firebase.json
+
 # Build
 public/css/main.css
 

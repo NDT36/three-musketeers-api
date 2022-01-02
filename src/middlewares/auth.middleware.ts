@@ -56,29 +56,3 @@ export function verifyAccessToken(req: Request, res: Response, next: NextFunctio
     return fail(res, err, 401);
   }
 }
-
-/* -------------------------------------------------------------------------- */
-/*                             Secret from config                             */
-/* -------------------------------------------------------------------------- */
-export function verifyAdminToken(req: Request, res: Response, next: NextFunction) {
-  let token = req.headers['authorization'] || '';
-  token = token.replace('Bearer ', '');
-
-  /**
-   * Kiểm tra xem token client gửi lên code okela không
-   * Nếu oke thì assign payload vào biến request.
-   */
-  try {
-    if (token !== config.AUTH.ADMIN_TOKEN) {
-      return fail(
-        res,
-        error(ErrorCode.Wrong_Admin_Token, 401, { note: 'Admin token invalid!' }),
-        401
-      );
-    }
-    return next();
-  } catch (err) {
-    logger.error(err);
-    return fail(res, err, 401);
-  }
-}

@@ -10,9 +10,9 @@ import logRequest from '$middlewares/logRequest';
 import limiter from '$middlewares/limiter';
 import authController from '$controllers/auth.controller';
 import userController from '$controllers/user.controller';
-import nftController from '$controllers/nft.controller';
+import groupController from '$controllers/group.controller';
+import transactionController from '$controllers/transaction.controller';
 import categoryController from '$controllers/category.controller';
-import favoriteController from '$controllers/favorite.controller';
 const logger = log('Index');
 
 const app = express();
@@ -39,18 +39,16 @@ createMongoConnection()
     /* -------------------------------------------------------------------------- */
     authController(app);
     userController(app);
-    nftController(app);
+    groupController(app);
+    transactionController(app);
     categoryController(app);
-    favoriteController(app);
 
     /* -------------------------------------------------------------------------- */
     /*                                 Run server                                 */
     /* -------------------------------------------------------------------------- */
     http.listen(config.SERVER.PORT, () => {
       logger.info(
-        `Express server started on port ${process.env.PORT || 3000}. Environment: ${
-          process.env.NODE_ENV || 'dev'
-        }`
+        `Express server started on port ${config.SERVER.PORT}. Environment: ${config.SERVER.NODE_ENV}`
       );
     });
   })
