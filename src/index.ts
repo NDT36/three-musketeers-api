@@ -8,11 +8,9 @@ import log from '$helpers/log';
 import config from '$config';
 import logRequest from '$middlewares/logRequest';
 import limiter from '$middlewares/limiter';
-import authController from '$controllers/auth.controller';
-import userController from '$controllers/user.controller';
-import groupController from '$controllers/group.controller';
-import transactionController from '$controllers/transaction.controller';
-import categoryController from '$controllers/category.controller';
+import './require';
+import { RootRoute } from '$helpers/route';
+
 const logger = log('Index');
 
 const app = express();
@@ -37,11 +35,7 @@ createMongoConnection()
     /* -------------------------------------------------------------------------- */
     /*                            Register API endpoint                           */
     /* -------------------------------------------------------------------------- */
-    authController(app);
-    userController(app);
-    groupController(app);
-    transactionController(app);
-    categoryController(app);
+    app.use(RootRoute);
 
     /* -------------------------------------------------------------------------- */
     /*                                 Run server                                 */

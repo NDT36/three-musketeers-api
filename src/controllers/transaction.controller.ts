@@ -12,83 +12,45 @@ import {
 } from '$services/transaction.service';
 import { createTransactionSchema, updateTransactionSchema } from '$validators/transaction';
 import { ErrorCode } from '$types/enum';
-const logger = log('transactionController');
+import AppRoute from '$helpers/route';
+const Controller = new AppRoute('transactionController');
 
-export default function transactionController(app: Express) {
-  app.get('/transaction/user', [verifyAccessToken], async (req: Request, res: Response) => {
-    try {
-      const { results, ...payload } = await getListTransactionOfUser(req.userId, req.query as any);
-      return success(res, results, payload);
-    } catch (err) {
-      logger.error(err);
-      return fail(res, err);
-    }
-  });
+Controller.get('/transaction/user', [verifyAccessToken], async (req: Request) => {
+  const { results, ...payload } = await getListTransactionOfUser(req.userId, req.query as any);
+  return { results, payload };
+});
 
-  app.get(
-    '/transaction/group/:groupId',
-    [verifyAccessToken],
-    async (req: Request, res: Response) => {
-      try {
-        const groupId = req.params.groupId;
+Controller.get('/transaction/group/:groupId', [verifyAccessToken], async (req: Request) => {
+  const groupId = req.params.groupId;
 
-        const { results, ...payload } = await getListTransactionOfGroup(
-          req.userId,
-          groupId,
-          req.query as any
-        );
-        return success(res, results, payload);
-      } catch (err) {
-        logger.error(err);
-        return fail(res, err);
-      }
-    }
+  const { results, ...payload } = await getListTransactionOfGroup(
+    req.userId,
+    groupId,
+    req.query as any
   );
+  return { results, payload };
+});
 
-  app.get(
-    '/transaction/:transactionId',
-    [verifyAccessToken],
-    async (req: Request, res: Response) => {
-      try {
-        const result = await getDetailTransaction(req.params.transactionId);
-        return success(res, result);
-      } catch (err) {
-        logger.error(err);
-        return fail(res, err);
-      }
-    }
-  );
+Controller.get('/transaction/:transactionId', [verifyAccessToken], async (req: Request) => {
+  const result = await getDetailTransaction(req.params.transactionId);
+  return result;
+});
 
-  app.post('/transaction', [verifyAccessToken], async (req: Request, res: Response) => {
-    try {
-      validate(createTransactionSchema, req.body);
-      const result = await createTransaction(req.userId, req.body);
-      return success(res, result);
-    } catch (err) {
-      logger.error(err);
-      return fail(res, err);
-    }
-  });
+Controller.post('/transaction', [verifyAccessToken], async (req: Request) => {
+  validate(createTransactionSchema, req.body);
+  const result = await createTransaction(req.userId, req.body);
+  return result;
+});
 
-  app.put(
-    '/transaction/:transactionId',
-    [verifyAccessToken],
-    async (req: Request, res: Response) => {
-      try {
-        const transactionId = req.params.transactionId;
-        if (!transactionId) {
-          throw error(ErrorCode.Invalid_Input, 422, {
-            notes: 'Missing transactionId in query URL',
-          });
-        }
+Controller.put('/transaction/:transactionId', [verifyAccessToken], async (req: Request) => {
+  const transactionId = req.params.transactionId;
+  if (!transactionId) {
+    throw error(ErrorCode.Invalid_Input, 422, {
+      notes: 'Missing transactionId in query URL',
+    });
+  }
 
-        validate(updateTransactionSchema, req.body);
-        const result = await updateTransaction(req.userId, transactionId, req.body);
-        return success(res, result);
-      } catch (err) {
-        logger.error(err);
-        return fail(res, err);
-      }
-    }
-  );
-}
+  validate(updateTransactionSchema, req.body);
+  const result = await updateTransaction(req.userId, transactionId, req.body);
+  return result;
+});

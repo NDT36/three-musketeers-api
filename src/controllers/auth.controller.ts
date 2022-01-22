@@ -1,46 +1,30 @@
-import log from '$helpers/log';
-import { error, fail, success } from '$helpers/response';
-import { Express, Request, Response } from 'express';
+import { Request } from 'express';
 import { validate } from '$helpers/validate';
 import { loginSchema, refreshTokenSchema, registerSchema } from '$validators/auth';
 import { login, refreshToken, register } from '$services/auth.service';
-const logger = log('authController');
+import AppRoute from '$helpers/route';
 
-export default function authController(app: Express) {
-  app.post('/login', [], async (req: Request, res: Response) => {
-    try {
-      validate(loginSchema, req.body);
-      const results = await login(req.body);
-      return success(res, results);
-    } catch (err) {
-      logger.error(err);
-      return fail(res, err);
-    }
-  });
+const Controller = new AppRoute('authController');
 
-  app.post('/register', [], async (req: Request, res: Response) => {
-    try {
-      validate(registerSchema, req.body);
+Controller.post('/login', [], async (req: Request) => {
+  validate(loginSchema, req.body);
+  const results = await login(req.body);
+  return results;
+});
 
-      req.body.name = req.body.email;
+Controller.post('/register', [], async (req: Request) => {
+  const body = req.body;
 
-      const results = await register(req.body);
-      return success(res, results);
-    } catch (err) {
-      logger.error(err);
-      return fail(res, err);
-    }
-  });
+  validate(registerSchema, body);
+  Object.assign(body, { email: body.name });
 
-  app.post('/refresh-token', [], async (req: Request, res: Response) => {
-    try {
-      validate(refreshTokenSchema, req.body);
+  const results = await register(body);
+  return results;
+});
 
-      const results = await refreshToken(req.body.refreshToken);
-      return success(res, results);
-    } catch (err) {
-      logger.error(err);
-      return fail(res, err);
-    }
-  });
-}
+Controller.post('/refresh-token', [], async (req: Request) => {
+  validate(refreshTokenSchema, req.body);
+
+  const results = await refreshToken(req.body.refreshToken);
+  return results;
+});

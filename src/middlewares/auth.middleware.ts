@@ -7,7 +7,7 @@ import { NextFunction, Request, Response } from 'express';
 import { verify, VerifyOptions } from 'jsonwebtoken';
 import { promisify } from 'util';
 const verifyAsync = promisify(verify) as any;
-const logger = log('authMiddlewares');
+const routeName = 'authMiddlewares';
 
 export function verifyAccessToken(req: Request, res: Response, next: NextFunction) {
   let token = req.headers['authorization'] || '';
@@ -39,6 +39,7 @@ export function verifyAccessToken(req: Request, res: Response, next: NextFunctio
             return fail(
               res,
               error(ErrorCode.User_Blocked, 401, { note: 'User account blocked!' }),
+              routeName,
               401
             );
           }
@@ -49,10 +50,9 @@ export function verifyAccessToken(req: Request, res: Response, next: NextFunctio
       })
       .catch(() => {
         const err = error(ErrorCode.Token_Expired, 401, { note: 'Invalid access token!' });
-        return fail(res, err, 401);
+        return fail(res, err, routeName, 401);
       });
   } catch (err) {
-    logger.error(err);
-    return fail(res, err, 401);
+    return fail(res, err, routeName, 401);
   }
 }
