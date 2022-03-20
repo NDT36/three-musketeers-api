@@ -3,7 +3,11 @@ import { NextFunction, Request, Response } from 'express';
 export interface ILogin {
   email: string;
   password: string;
-  walletAddress: string;
+}
+
+export interface ILoginBySocial {
+  token: string;
+  type: 'Google' | 'Facebook' | string;
 }
 
 export interface IRegister {

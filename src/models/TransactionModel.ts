@@ -4,34 +4,40 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface ITransaction extends Document {
   _id: Schema.Types.ObjectId | string;
   users: Array<Schema.Types.ObjectId | string>;
-  createdBy: Schema.Types.ObjectId | string;
-  groupId?: Schema.Types.ObjectId | string;
-  categoryId: string;
-  type: number;
-  image: string;
-  description: string;
-  actionAt: string;
-  updateAt: number;
-  lastUpdateBy: number;
-  createdAt: number;
-  status: number;
   money: number;
+  type: number;
+  categoryId: string | null;
+  sourceId: string | null;
+  targetSourceId: string | null;
+  description: string;
+  status: number;
+  groupId?: Schema.Types.ObjectId | string;
+  actionAt: number;
+
+  createdBy: Schema.Types.ObjectId | string;
+  updateAt: number;
+  updateBy: number;
+  createdAt: number;
 }
 
 export const TransactionSchema = new Schema({
   users: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-  createdBy: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
-  lastUpdateBy: { type: Schema.Types.ObjectId, ref: 'User' },
-  groupId: { type: Schema.Types.ObjectId, ref: 'Group' },
+  money: { type: Number, required: true },
+  type: { type: Number, required: true },
   categoryId: { type: Schema.Types.ObjectId, ref: 'Category' },
-  type: { type: Number, default: TransactionType.EXPENSE },
+  // Nguồn tiền
+  sourceId: { type: Schema.Types.ObjectId, ref: 'Source' },
+  targetSourceId: { type: Schema.Types.ObjectId, ref: 'Source' },
   description: { type: String, required: true },
-  image: { type: String },
+
+  status: { type: Number, default: CommonStatus.ACTIVE },
+  groupId: { type: Schema.Types.ObjectId, ref: 'Group' },
   actionAt: { type: Number, default: Date.now },
+
+  createdBy: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
+  updateBy: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
   updateAt: { type: Number, default: Date.now },
   createdAt: { type: Number, default: Date.now },
-  status: { type: Number, default: CommonStatus.ACTIVE },
-  money: { type: Number, required: true },
 });
 
 TransactionSchema.pre('save', function (next) {

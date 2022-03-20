@@ -9,6 +9,7 @@ import config from '$config';
 import logRequest from '$middlewares/logRequest';
 import limiter from '$middlewares/limiter';
 import './require';
+import '$helpers/firebase/init';
 import { RootRoute } from '$helpers/route';
 
 const logger = log('Index');

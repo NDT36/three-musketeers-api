@@ -45,6 +45,7 @@ export enum TransactionType {
   EXPENSE = 1,
   INCOME = 2,
   LEND = 3,
+  TRANSFER_MONEY = 4,
 }
 
 export enum CategoryType {
@@ -52,4 +53,9 @@ export enum CategoryType {
   FOOD = 2,
   GIFT = 3,
   OTHER = 4,
+}
+
+export enum LoginSocialType {
+  GOOGLE = 'Google',
+  FACEBOOK = 'Facebook',
 }

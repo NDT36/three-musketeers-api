@@ -1,3 +1,5 @@
+import { LoginSocialType } from '$types/enum';
+
 export const loginSchema: AjvSchema = {
   type: 'object',
   required: ['email', 'password'],
@@ -15,19 +17,19 @@ export const loginSchema: AjvSchema = {
   },
 };
 
-export const registerSchema: AjvSchema = {
+export const loginSocialSchema: AjvSchema = {
   type: 'object',
-  required: ['email', 'password'],
+  required: ['token', 'type'],
   additionalProperties: false,
   properties: {
-    email: {
+    token: {
       type: 'string',
-      format: 'email',
+      minLength: 1,
+      maxLength: 3000,
     },
-    password: {
+    type: {
       type: 'string',
-      minLength: 6,
-      maxLength: 32,
+      enum: [LoginSocialType.GOOGLE],
     },
   },
 };

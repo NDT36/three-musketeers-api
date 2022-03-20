@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { validate } from '$helpers/validate';
-import { loginSchema, refreshTokenSchema, registerSchema } from '$validators/auth';
-import { login, refreshToken, register } from '$services/auth.service';
+import { loginSchema, loginSocialSchema, refreshTokenSchema } from '$validators/auth';
+import { login, loginBySocial, refreshToken } from '$services/auth.service';
 import AppRoute from '$helpers/route';
 
 const Controller = new AppRoute('authController');
@@ -12,13 +12,9 @@ Controller.post('/login', [], async (req: Request) => {
   return results;
 });
 
-Controller.post('/register', [], async (req: Request) => {
-  const body = req.body;
-
-  validate(registerSchema, body);
-  Object.assign(body, { email: body.name });
-
-  const results = await register(body);
+Controller.post('/login-social', [], async (req: Request) => {
+  validate(loginSocialSchema, req.body);
+  const results = await loginBySocial(req.body);
   return results;
 });
 

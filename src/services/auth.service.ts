@@ -1,11 +1,12 @@
 import { compareSync, hashSync } from 'bcryptjs';
 import { error } from '$helpers/response';
-import { ILogin, IRegister } from '$types/interface';
-import { ErrorCode, TokenType, UserStatus } from '$types/enum';
+import { ILogin, ILoginBySocial, IRegister } from '$types/interface';
+import { ErrorCode, LoginSocialType, TokenType, UserStatus } from '$types/enum';
 import { UserModel } from '$models/UserModel';
 import { JwtPayload, sign, verify, VerifyOptions } from 'jsonwebtoken';
 import config from '$config';
 import log from '$helpers/log';
+import { verifyIdToken } from '$helpers/firebase/firebase';
 const logger = log('User model');
 
 /**
@@ -13,14 +14,13 @@ const logger = log('User model');
  * @returns accressToken and refreshToken
  */
 export async function login(params: ILogin) {
-  const { email, password, walletAddress } = params;
+  const { email, password } = params;
 
   const User = await UserModel.findOne({ email }, [
     '_id',
     'email',
     'password',
     'status',
-    'walletAddress',
     'refreshToken',
   ]);
 
@@ -45,28 +45,56 @@ export async function login(params: ILogin) {
   return token;
 }
 
-export async function register(params: IRegister) {
-  const { email, password, name } = params;
-  const oldUser = await UserModel.findOne({ email }, ['_id']).lean();
+export async function loginBySocial(params: ILoginBySocial) {
+  if (params.type === LoginSocialType.GOOGLE) {
+    const profile = await verifyIdToken(params.token);
+    const googleUID = profile.uid;
+    const picture = profile.picture;
 
-  if (oldUser) throw error(ErrorCode.Email_Address_Already_Exist);
+    const user = await UserModel.findOne({ googleUID }, [
+      '_id',
+      'status',
+      'avatar',
+      'refreshToken',
+    ]);
 
-  const passwordHash = hashSync(password, config.AUTH.SALT_ROUND);
+    if (!user) {
+      const { email, name } = profile;
 
-  /* -------------------------------------------------------------------------- */
-  /*                               Create new user                              */
-  /* -------------------------------------------------------------------------- */
-  const User = new UserModel({ email, password: passwordHash, name });
-  const result = (await User.save()).toObject();
-  const token = generateToken({ _id: String(result._id), refreshToken: '' });
+      /* -------------------------------------------------------------------------- */
+      /*                               Create new user                              */
+      /* -------------------------------------------------------------------------- */
+      const userModel = new UserModel({ email, avatar: picture, name, googleUID });
+      const result = (await userModel.save()).toObject();
+      const token = generateToken({ _id: String(result._id), refreshToken: '' });
 
-  /* -------------------------------------------------------------------------- */
-  /*                      Update refresh token to database                      */
-  /* -------------------------------------------------------------------------- */
-  User.refreshToken = token.refreshToken;
-  await User.save();
+      /* -------------------------------------------------------------------------- */
+      /*                      Update refresh token to database                      */
+      /* -------------------------------------------------------------------------- */
+      userModel.refreshToken = token.refreshToken;
+      await userModel.save();
 
-  return token;
+      return token;
+    }
+
+    if (user.status === UserStatus.INACTIVE) throw error(ErrorCode.User_Blocked);
+
+    const token = generateToken({
+      _id: String(user._id),
+      refreshToken: user.refreshToken,
+    });
+
+    /* -------------------------------------------------------------------------- */
+    /*                      Update refresh token to database                      */
+    /* -------------------------------------------------------------------------- */
+    Object.assign(user, { refreshToken: token.refreshToken, avatar: picture });
+
+    await user.save();
+
+    return token;
+  }
+
+  throw error(ErrorCode.Invalid_Input, 422, 'Wrong social type');
 }
 
 export async function refreshToken(refreshToken: string) {
