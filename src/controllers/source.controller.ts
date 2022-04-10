@@ -2,7 +2,7 @@ import { Request } from 'express';
 import { validate } from '$helpers/validate';
 import { verifyAccessToken } from '$middlewares/auth.middleware';
 import AppRoute from '$helpers/route';
-import { createSource, listSource, updateSource } from '$services/source.service';
+import { createSource, detailsSource, listSource, updateSource } from '$services/source.service';
 import { createSourceSchema, updateSourceSchema } from '$validators/source';
 import { error } from '$helpers/response';
 import { ErrorCode } from '$types/enum';
@@ -11,6 +11,11 @@ const Controller = new AppRoute('sourceController');
 
 Controller.get('/sources', [verifyAccessToken], async (req: Request) => {
   const profile = await listSource(req.userId);
+  return profile;
+});
+
+Controller.get('/source/:id', [verifyAccessToken], async (req: Request) => {
+  const profile = await detailsSource(req.userId, req.params.id);
   return profile;
 });
 

@@ -14,14 +14,6 @@ export const createSourceSchema: AjvSchema = {
       type: 'number',
       minimum: 0,
     },
-    color: {
-      type: 'string',
-      maxLength: 30,
-    },
-    description: {
-      type: 'string',
-      maxLength: 255,
-    },
   },
 };
 
@@ -34,14 +26,6 @@ export const updateSourceSchema: AjvSchema = {
       type: 'string',
       minLength: 1,
       maxLength: 30,
-    },
-    color: {
-      type: 'string',
-      maxLength: 30,
-    },
-    description: {
-      type: 'string',
-      maxLength: 255,
     },
     status: {
       enum: [CommonStatus.ACTIVE, CommonStatus.INACTIVE],

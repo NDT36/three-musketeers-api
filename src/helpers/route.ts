@@ -37,7 +37,7 @@ class AppRoute {
 function wrapper(handler: IRouteHandler, routeName: string): RequestHandler {
   return (req: Request, res: Response, next: NextFunction) => {
     handler(req, res, next)
-      .then((result: unknown) => success(res, result))
+      .then((result: unknown) => setTimeout(() => success(res, result), 1000))
       .catch((err: unknown) => fail(res, err, routeName));
   };
 }

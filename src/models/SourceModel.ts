@@ -6,8 +6,6 @@ export interface ISource extends Document {
   userId: Schema.Types.ObjectId | string;
   balance: CommonStatus;
   name: string;
-  color: string;
-  description: string;
   status: CommonStatus;
   updateAt: number;
   createdAt: number;
@@ -17,8 +15,6 @@ export const SourceSchema = new Schema<ISource>({
   userId: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
   name: { type: String, required: true },
   balance: { type: Number, default: 0 },
-  description: { type: String, required: true },
-  color: { type: String },
   status: { type: Number, default: CommonStatus.ACTIVE },
   updateAt: { type: Number, default: Date.now },
   createdAt: { type: Number, default: Date.now },

@@ -1,16 +1,19 @@
 import { SourceModel } from '$models/SourceModel';
+import { CommonStatus } from '$types/enum';
 
 export async function listSource(userId: string) {
-  const sources = await SourceModel.find({ userId });
+  const sources = await SourceModel.find({ userId, status: CommonStatus.ACTIVE });
 
   return sources;
+}
+
+export async function detailsSource(userId: string, sourceId: string) {
+  return await SourceModel.findOne({ _id: sourceId, userId, status: CommonStatus.ACTIVE });
 }
 
 interface ICreateSource {
   name: string;
   balance: number;
-  description: string;
-  color: string;
 }
 export async function createSource(userId: string, params: ICreateSource) {
   const Source = new SourceModel({
@@ -24,8 +27,6 @@ export async function createSource(userId: string, params: ICreateSource) {
 
 interface IUpdateSource {
   name: string;
-  description: string;
-  color: string;
 }
 export async function updateSource(userId: string, sourceId: string, params: IUpdateSource) {
   const Source = await SourceModel.findOne({ _id: sourceId, userId });
