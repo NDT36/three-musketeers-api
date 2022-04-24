@@ -28,7 +28,7 @@ export const TransactionSchema = new Schema({
   // Nguồn tiền
   sourceId: { type: Schema.Types.ObjectId, ref: 'Source' },
   targetSourceId: { type: Schema.Types.ObjectId, ref: 'Source' },
-  description: { type: String, required: true },
+  description: { type: String },
 
   status: { type: Number, default: CommonStatus.ACTIVE },
   groupId: { type: Schema.Types.ObjectId, ref: 'Group' },

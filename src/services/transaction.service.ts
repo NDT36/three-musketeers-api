@@ -1,7 +1,9 @@
 import { error } from '$helpers/response';
 import { GroupModel } from '$models/GroupModel';
+import { SourceModel } from '$models/SourceModel';
 import { TransactionModel } from '$models/TransactionModel';
 import { CommonStatus, ErrorCode, TransactionType } from '$types/enum';
+import { Types } from 'mongoose';
 import { checkMemberOfGroupValid } from './group.service';
 
 interface ICreateTransaction {
@@ -14,17 +16,70 @@ interface ICreateTransaction {
   actionAt: number;
   money: number;
   image?: string;
+  sourceId: string | null;
+  targetSourceId: string | null;
 }
 export async function createTransaction(userId: string, params: ICreateTransaction) {
-  params.users = assignCreator(userId, params.users);
+  // params.users = assignCreator(userId, params.users);
+
+  if (!params.groupId) params.users = [userId];
 
   if (params.groupId) {
     const isValid = await checkMemberOfGroupValid(params.groupId, params.users);
     if (!isValid) throw error(ErrorCode.Target_User_Contain_Someone_Not_In_This_Group);
   }
 
+  if (params.sourceId) {
+    const Source = await SourceModel.findOne({
+      _id: params.sourceId,
+      userId,
+      status: CommonStatus.ACTIVE,
+    });
+
+    if (!Source) throw error(ErrorCode.Source_Not_Found);
+
+    Source.balance = await getSourceBalance(params.sourceId);
+
+    if (params.type === TransactionType.EXPENSE) {
+      Source.balance = Source.balance + params.money;
+    }
+
+    if (params.type === TransactionType.INCOME) {
+      Source.balance = Source.balance + params.money;
+    }
+
+    if (params.type === TransactionType.LEND) {
+      Source.balance = Source.balance + params.money;
+    }
+
+    if (params.type === TransactionType.UPDATE_BALANCE) {
+      Source.balance = Source.balance + params.money;
+    }
+
+    if (params.type === TransactionType.TRANSFER_MONEY) {
+      Source.balance = Source.balance - params.money;
+      const TargetSource = await SourceModel.findOne({
+        _id: params.targetSourceId,
+        userId,
+        status: CommonStatus.ACTIVE,
+      });
+
+      if (!TargetSource) throw error(ErrorCode.Source_Not_Found, 400, 'Target source not found');
+
+      TargetSource.balance = await getSourceBalance(params.targetSourceId);
+      TargetSource.balance = TargetSource.balance + params.money;
+
+      params.money = -params.money;
+
+      await TargetSource.save();
+    }
+
+    await Source.save();
+  }
+
   const transaction = new TransactionModel({
     createdBy: userId,
+    updateBy: userId,
     ...params,
   });
 
@@ -191,4 +246,43 @@ export async function getListTransactionOfGroup(
   const totalItems = await countQuery.lean();
 
   return { results, totalItems, pageIndex: params.pageIndex, pageSize: params.pageSize };
+}
+
+export async function getSourceBalance(sourceId: string) {
+  const source = await SourceModel.findOne({ _id: sourceId });
+
+  const balance = await TransactionModel.aggregate([
+    { $match: { sourceId: new Types.ObjectId(sourceId) } },
+    {
+      $group: {
+        _id: null,
+        total: {
+          $sum: '$money',
+        },
+      },
+    },
+  ]);
+
+  const transfer = await TransactionModel.aggregate([
+    {
+      $match: {
+        targetSourceId: new Types.ObjectId(sourceId),
+        type: TransactionType.TRANSFER_MONEY,
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        total: {
+          $sum: '$money',
+        },
+      },
+    },
+  ]);
+
+  return (
+    source.initialBalance +
+    (Number(balance?.[0]?.['total']) || 0) +
+    Math.abs(Number(transfer?.[0]?.['total'] || 0))
+  );
 }

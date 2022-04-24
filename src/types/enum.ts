@@ -18,6 +18,7 @@ export enum ErrorCode {
   Category_Not_Found = 'Category_Not_Found',
   Access_Denided = 'Access_Denided',
   Category_Name_Already_Exist = 'Category_Name_Already_Exist',
+  Source_Not_Found = 'Source_Not_Found',
 }
 
 export enum TokenType {
@@ -45,7 +46,9 @@ export enum TransactionType {
   EXPENSE = 1,
   INCOME = 2,
   LEND = 3,
-  TRANSFER_MONEY = 4,
+  DEBT = 4,
+  TRANSFER_MONEY = 5,
+  UPDATE_BALANCE = 6,
 }
 
 export enum CategoryType {

@@ -16,6 +16,7 @@ Controller.get('/sources', [verifyAccessToken], async (req: Request) => {
 
 Controller.get('/source/:id', [verifyAccessToken], async (req: Request) => {
   const profile = await detailsSource(req.userId, req.params.id);
+
   return profile;
 });
 

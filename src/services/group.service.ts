@@ -90,8 +90,6 @@ export async function leaveGroup(userId: string, groupId: string) {
 
   if (!group.members.includes(userId)) return;
 
-  console.log(group.members);
-
   group.members = group.members.filter((item) => String(item) !== userId);
 
   await group.save();

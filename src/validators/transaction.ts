@@ -6,16 +6,13 @@ export const createTransactionSchema: AjvSchema = {
   additionalProperties: false,
   properties: {
     categoryId: {
-      type: 'string',
+      type: ['string', 'null'],
       minLength: 1,
     },
     description: {
       type: 'string',
-      minLength: 1,
+      minLength: 0,
       maxLength: 100,
-    },
-    image: {
-      type: 'string',
     },
     actionAt: {
       type: 'number',
@@ -24,13 +21,26 @@ export const createTransactionSchema: AjvSchema = {
       type: ['string', 'null'],
       minLength: 1,
     },
+    sourceId: {
+      type: ['string', 'null'],
+      minLength: 1,
+    },
+    targetSourceId: {
+      type: ['string', 'null'],
+      minLength: 1,
+    },
     type: {
       type: 'number',
-      enum: [TransactionType.EXPENSE, TransactionType.INCOME, TransactionType.LEND],
+      enum: [
+        TransactionType.EXPENSE,
+        TransactionType.INCOME,
+        TransactionType.LEND,
+        TransactionType.UPDATE_BALANCE,
+        TransactionType.TRANSFER_MONEY,
+      ],
     },
     money: {
       type: 'integer',
-      minimum: 0,
     },
     users: {
       type: 'array',

@@ -19,6 +19,7 @@ export async function createSource(userId: string, params: ICreateSource) {
   const Source = new SourceModel({
     userId,
     ...params,
+    initialBalance: params.balance,
   });
   const source = await Source.save();
 
