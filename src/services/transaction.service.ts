@@ -163,11 +163,13 @@ export async function getListTransactionOfUser(userId: string, params: IListTran
   const query = TransactionModel.find({
     users: { $in: [userId] },
     status: CommonStatus.ACTIVE,
+    type: { $nin: [TransactionType.TRANSFER_MONEY] },
   });
 
   const countQuery = TransactionModel.count({
     users: { $in: [userId] },
     status: CommonStatus.ACTIVE,
+    type: { $nin: [TransactionType.TRANSFER_MONEY] },
   });
 
   if (params.categoryId) {

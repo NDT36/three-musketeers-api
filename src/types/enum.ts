@@ -36,12 +36,6 @@ export enum CommonStatus {
   INACTIVE = 0,
 }
 
-export enum Token {
-  SOLANA = 'SOLANA',
-  USDT = 'USDT',
-  RACEFI = 'RACEFI',
-}
-
 export enum TransactionType {
   EXPENSE = 1,
   INCOME = 2,

@@ -2,7 +2,11 @@ import { Response } from 'express';
 import { ErrorCode } from '$types/enum';
 import log from './log';
 
-export const success = (res: Response, result = {}, payload = {}, status = 200) => {
+export const success = (res: Response, result: any = {}, payload = {}, status = 200) => {
+  if (result.results && result.payload) {
+    res.status(status).send({ success: true, status, data: result.results, ...result.payload });
+    return;
+  }
   res.status(status).send({ success: true, status, data: result, ...payload });
 };
 
