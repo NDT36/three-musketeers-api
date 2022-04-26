@@ -7,6 +7,7 @@ import { JwtPayload, sign, verify, VerifyOptions } from 'jsonwebtoken';
 import config from '$config';
 import log from '$helpers/log';
 import { verifyIdToken } from '$helpers/firebase/firebase';
+import { createSource } from './source.service';
 const logger = log('User model');
 
 /**
@@ -72,8 +73,9 @@ export async function loginBySocial(params: ILoginBySocial) {
       /*                      Update refresh token to database                      */
       /* -------------------------------------------------------------------------- */
       userModel.refreshToken = token.refreshToken;
-      await userModel.save();
+      const user = await userModel.save();
 
+      await createSource(String(user._id), { balance: 0, name: 'Cash' });
       return token;
     }
 
