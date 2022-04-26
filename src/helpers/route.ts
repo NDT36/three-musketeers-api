@@ -1,3 +1,4 @@
+import config from '$config';
 import { IRouteHandler } from '$types/interface';
 import { NextFunction, Request, RequestHandler, Response, Router } from 'express';
 import { fail, success } from './response';
@@ -30,14 +31,18 @@ class AppRoute {
   }
 
   private getPath(path: string) {
-    return `${this._basePath + path}`.replace('//', '/');
+    return `${this._basePath + path}`.split('//').join('/');
   }
 }
 
 function wrapper(handler: IRouteHandler, routeName: string): RequestHandler {
   return (req: Request, res: Response, next: NextFunction) => {
     handler(req, res, next)
-      .then((result: unknown) => setTimeout(() => success(res, result), 1000))
+      .then((result: unknown) =>
+        config.SERVER.NODE_ENV !== 'production'
+          ? setTimeout(() => success(res, result), 1000)
+          : success(res, result)
+      )
       .catch((err: unknown) => fail(res, err, routeName));
   };
 }
