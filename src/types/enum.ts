@@ -47,9 +47,7 @@ export enum TransactionType {
 
 export enum CategoryType {
   COMMON = 1,
-  FOOD = 2,
-  GIFT = 3,
-  OTHER = 4,
+  SYSTEM = 2,
 }
 
 export enum LoginSocialType {

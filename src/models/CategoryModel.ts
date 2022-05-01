@@ -6,7 +6,7 @@ export interface ICategory extends Document {
   name: string;
   avatar: string;
   type: number;
-  createdBy: Schema.Types.ObjectId | string;
+  createdBy: mongoose.Types.ObjectId | string;
   updateAt: number;
   createdAt: number;
   status: number;
@@ -15,7 +15,7 @@ export interface ICategory extends Document {
 export const CategorySchema = new Schema({
   name: { type: String, required: true, unique: true },
   avatar: { type: String },
-  createdBy: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
+  createdBy: { type: mongoose.Types.ObjectId, required: true, ref: 'User' },
   type: { type: Number, default: CategoryType.COMMON },
   updateAt: { type: Number, default: Date.now },
   createdAt: { type: Number, default: Date.now },

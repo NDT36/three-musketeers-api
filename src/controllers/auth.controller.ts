@@ -22,5 +22,6 @@ Controller.post('/refresh-token', [], async (req: Request) => {
   validate(refreshTokenSchema, req.body);
 
   const results = await refreshToken(req.body.refreshToken);
+  delete results.refreshToken;
   return results;
 });

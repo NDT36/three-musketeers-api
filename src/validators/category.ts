@@ -12,10 +12,6 @@ export const createCategorySchema: AjvSchema = {
     avatar: {
       type: 'string',
     },
-    type: {
-      type: 'number',
-      enum: [CategoryType.COMMON, CategoryType.FOOD, CategoryType.GIFT, CategoryType.OTHER],
-    },
   },
 };
 
@@ -34,10 +30,6 @@ export const updateCategorySchema: AjvSchema = {
     status: {
       type: 'number',
       enum: [CommonStatus.ACTIVE, CommonStatus.INACTIVE],
-    },
-    type: {
-      type: 'number',
-      enum: [CategoryType.COMMON, CategoryType.FOOD, CategoryType.GIFT, CategoryType.OTHER],
     },
   },
 };

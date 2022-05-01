@@ -1,6 +1,6 @@
 import log from '$helpers/log';
-import { error, fail } from '$helpers/response';
-import { Express, Request, Response } from 'express';
+import { error } from '$helpers/response';
+import { Request } from 'express';
 import { validate } from '$helpers/validate';
 import { verifyAccessToken } from '$middlewares/auth.middleware';
 import { createCategory, listCategory, updateCategory } from '$services/category.service';
@@ -10,8 +10,8 @@ import AppRoute from '$helpers/route';
 
 const Controller = new AppRoute('categoryController');
 
-Controller.get('/category/list', [], async (req: Request) => {
-  const profile = await listCategory(req.query);
+Controller.get('/category/list', [verifyAccessToken], async (req: Request) => {
+  const profile = await listCategory(req.userId, req.query);
   return profile;
 });
 
