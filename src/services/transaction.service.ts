@@ -288,3 +288,48 @@ export async function getSourceBalance(sourceId: string) {
     Math.abs(Number(transfer?.[0]?.['total'] || 0))
   );
 }
+
+export async function getTransactionStatistics(userId: string, startTime: number, endTime: number) {
+  const earned = TransactionModel.aggregate()
+    .match({
+      actionAt: { $gte: startTime, $lt: endTime },
+      type: { $nin: [TransactionType.TRANSFER_MONEY] },
+      createdBy: new Types.ObjectId(userId),
+      isIgnore: { $ne: Boolean(CommonStatus.ACTIVE) },
+      money: { $gte: 0 },
+    })
+    .addFields({
+      convertedActionDate: { $toDate: '$actionAt' },
+    })
+    .group({
+      _id: {
+        $dateToString: { format: '%Y-%m-%d', date: '$convertedActionDate', timezone: '+07:00' },
+      },
+      amount: { $sum: '$money' },
+      count: { $sum: 1 },
+    });
+
+  const spent = TransactionModel.aggregate()
+    .match({
+      actionAt: { $gte: startTime, $lt: endTime },
+      type: { $nin: [TransactionType.TRANSFER_MONEY] },
+      createdBy: new Types.ObjectId(userId),
+      isIgnore: { $ne: Boolean(CommonStatus.ACTIVE) },
+      money: { $lt: 0 },
+    })
+    .addFields({
+      convertedActionDate: { $toDate: '$actionAt' },
+    })
+    .group({
+      _id: {
+        $dateToString: { format: '%Y-%m-%d', date: '$convertedActionDate', timezone: '+07:00' },
+      },
+      amount: { $sum: '$money' },
+      count: { $sum: 1 },
+    });
+
+  const earnedRs = await earned.exec();
+  const spentRs = await spent.exec();
+
+  return { earned: earnedRs, spent: spentRs };
+}

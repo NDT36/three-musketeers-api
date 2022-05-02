@@ -13,6 +13,7 @@ export interface ITransaction extends Document {
   status: number;
   groupId?: Schema.Types.ObjectId | string;
   actionAt: number;
+  isIgnore: boolean;
 
   createdBy: Schema.Types.ObjectId | string;
   updateAt: number;
@@ -29,7 +30,7 @@ export const TransactionSchema = new Schema({
   sourceId: { type: Schema.Types.ObjectId, ref: 'Source' },
   targetSourceId: { type: Schema.Types.ObjectId, ref: 'Source' },
   description: { type: String },
-
+  isIgnore: { default: false, type: Schema.Types.Boolean },
   status: { type: Number, default: CommonStatus.ACTIVE },
   groupId: { type: Schema.Types.ObjectId, ref: 'Group' },
   actionAt: { type: Number, default: Date.now },

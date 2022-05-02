@@ -8,6 +8,7 @@ import {
   getDetailTransaction,
   getListTransactionOfGroup,
   getListTransactionOfUser,
+  getTransactionStatistics,
   updateTransaction,
 } from '$services/transaction.service';
 import { createTransactionSchema, updateTransactionSchema } from '$validators/transaction';
@@ -29,6 +30,14 @@ Controller.get('/transaction/group/:groupId', [verifyAccessToken], async (req: R
     req.query as any
   );
   return { results, payload };
+});
+
+Controller.get('/transaction/statistics', [verifyAccessToken], async (req: Request) => {
+  const startTime = new Date(req.query.startDate as string).getTime();
+  const endTime = new Date(req.query.endDate as string).getTime() + 1000 * 60 * 60 * 24;
+
+  const result = await getTransactionStatistics(req.userId, startTime, endTime);
+  return result;
 });
 
 Controller.get('/transaction/:transactionId', [verifyAccessToken], async (req: Request) => {
