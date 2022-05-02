@@ -154,6 +154,8 @@ interface IListTransaction {
   pageIndex: number;
   skip?: number;
   categoryId?: string;
+  startDate?: string;
+  endDate?: string;
 }
 export async function getListTransactionOfUser(userId: string, params: IListTransaction) {
   params.pageSize = Number(params.pageSize) || 10;
@@ -185,6 +187,20 @@ export async function getListTransactionOfUser(userId: string, params: IListTran
   if (params.endTime) {
     query.where({ actionAt: { $lte: params.endTime } });
     countQuery.where({ actionAt: { $lte: params.endTime } });
+  }
+
+  if (params.startDate) {
+    query.where({ actionAt: { $gte: new Date(params.startDate).getTime() } });
+    countQuery.where({ actionAt: { $gte: new Date(params.startDate).getTime() } });
+  }
+
+  if (params.endDate) {
+    query.where({
+      actionAt: { $lt: new Date(params.endDate).getTime() + 1000 * 60 * 60 * 24 },
+    });
+    countQuery.where({
+      actionAt: { $lt: new Date(params.endDate).getTime() + 1000 * 60 * 60 * 24 },
+    });
   }
 
   const results = await query
