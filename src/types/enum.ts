@@ -19,6 +19,7 @@ export enum ErrorCode {
   Access_Denided = 'Access_Denided',
   Category_Name_Already_Exist = 'Category_Name_Already_Exist',
   Source_Not_Found = 'Source_Not_Found',
+  Lend_Not_Found = 'Lend_Not_Found',
 }
 
 export enum TokenType {
@@ -53,4 +54,9 @@ export enum CategoryType {
 export enum LoginSocialType {
   GOOGLE = 'Google',
   FACEBOOK = 'Facebook',
+}
+
+export enum LendType {
+  LEND = 1,
+  DEBT = 2,
 }
