@@ -2,7 +2,7 @@ import { CategoryType, CommonStatus } from '$types/enum';
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface ICategory extends Document {
-  _id: Schema.Types.ObjectId | string;
+  _id: mongoose.Types.ObjectId | string;
   name: string;
   avatar: string;
   type: number;

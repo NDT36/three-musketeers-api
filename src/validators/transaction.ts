@@ -61,20 +61,20 @@ export const updateTransactionSchema: AjvSchema = {
       type: 'string',
       minLength: 1,
     },
+    sourceId: {
+      type: 'string',
+      minLength: 1,
+    },
     description: {
       type: 'string',
       minLength: 1,
       maxLength: 100,
-    },
-    image: {
-      type: 'string',
     },
     actionAt: {
       type: 'number',
     },
     money: {
       type: 'integer',
-      minimum: 0,
     },
     users: {
       type: 'array',

@@ -1,9 +1,10 @@
 import { error } from '$helpers/response';
+import { CategoryModel } from '$models/CategoryModel';
 import { GroupModel } from '$models/GroupModel';
 import { SourceModel } from '$models/SourceModel';
 import { TransactionModel } from '$models/TransactionModel';
 import { CommonStatus, ErrorCode, TransactionType } from '$types/enum';
-import { Types } from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { checkMemberOfGroupValid } from './group.service';
 
 interface ICreateTransaction {
@@ -101,7 +102,7 @@ interface IUpdateTransaction {
   actionAt?: number;
   status?: CommonStatus;
   money?: number;
-  image?: string;
+  sourceId?: string;
 }
 export async function updateTransaction(
   userId: string,
@@ -111,6 +112,7 @@ export async function updateTransaction(
   const transaction = await TransactionModel.findOne({ _id: transactionId });
   if (!transaction) throw error(ErrorCode.Transaction_Not_Found);
 
+  // Check permissions if group transaction
   if (transaction.groupId) {
     const group = await GroupModel.findOne({ _id: transaction.groupId }, '_id createdBy').lean();
     if (!group) throw error(ErrorCode.Group_Not_Found);
@@ -121,14 +123,15 @@ export async function updateTransaction(
       });
     }
   } else {
-    if (![transaction.createdBy].includes(userId)) {
+    if (![String(transaction.createdBy)].includes(userId)) {
       throw error(ErrorCode.Access_Denided, 400, {
         notes: 'Chỉ người tạo ra transaction này mới có quyền sửa.',
       });
     }
   }
 
-  if (params.users) {
+  if (!transaction.groupId) params.users = [userId];
+  if (params.users && params.users.length) {
     params.users = assignCreator(userId, params.users);
 
     if (transaction.groupId) {
@@ -136,9 +139,40 @@ export async function updateTransaction(
       if (!isValid) throw error(ErrorCode.Target_User_Contain_Someone_Not_In_This_Group);
     }
   }
+
+  if (params.categoryId) {
+    const Category = await CategoryModel.findOne({
+      _id: params.categoryId,
+    }).lean();
+    if (!Category) throw error(ErrorCode.Category_Not_Found);
+  }
+
   Object.assign(transaction, params);
 
-  return await transaction.save();
+  await transaction.save();
+
+  if (transaction.sourceId) {
+    const Source = await SourceModel.findOne({
+      _id: transaction.sourceId,
+      userId,
+    });
+    if (!Source) throw error(ErrorCode.Source_Not_Found);
+    Source.balance = await getSourceBalance(transaction.sourceId);
+    await Source.save();
+  }
+
+  if (params.sourceId && params.sourceId !== transaction.sourceId) {
+    const TargetSource = await SourceModel.findOne({
+      _id: params.sourceId,
+      userId,
+      status: CommonStatus.ACTIVE,
+    });
+    if (!TargetSource) throw error(ErrorCode.Source_Not_Found);
+    TargetSource.balance = await getSourceBalance(params.sourceId);
+    await TargetSource.save();
+  }
+
+  return;
 }
 
 export async function getDetailTransaction(transactionId: string) {
