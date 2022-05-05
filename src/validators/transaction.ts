@@ -58,11 +58,11 @@ export const updateTransactionSchema: AjvSchema = {
   additionalProperties: false,
   properties: {
     categoryId: {
-      type: 'string',
+      type: ['string', 'null'],
       minLength: 1,
     },
     sourceId: {
-      type: 'string',
+      type: ['string', 'null'],
       minLength: 1,
     },
     description: {
