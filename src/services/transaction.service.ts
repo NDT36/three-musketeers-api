@@ -147,21 +147,22 @@ export async function updateTransaction(
     if (!Category) throw error(ErrorCode.Category_Not_Found);
   }
 
+  const oldSourceId = transaction?.sourceId || null;
   Object.assign(transaction, params);
 
   await transaction.save();
 
-  if (transaction.sourceId) {
+  if (oldSourceId) {
     const Source = await SourceModel.findOne({
-      _id: transaction.sourceId,
+      _id: oldSourceId,
       userId,
     });
     if (!Source) throw error(ErrorCode.Source_Not_Found);
-    Source.balance = await getSourceBalance(transaction.sourceId);
+    Source.balance = await getSourceBalance(oldSourceId);
     await Source.save();
   }
 
-  if (params.sourceId && params.sourceId !== transaction.sourceId) {
+  if (params.sourceId && params.sourceId !== oldSourceId) {
     const TargetSource = await SourceModel.findOne({
       _id: params.sourceId,
       userId,
