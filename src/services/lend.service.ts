@@ -1,5 +1,4 @@
 import { error } from '$helpers/response';
-import { LendHistoryModel } from '$models/LendHistoryModel';
 import { LendModel } from '$models/LendModel';
 import { SourceModel } from '$models/SourceModel';
 import { TransactionModel } from '$models/TransactionModel';
