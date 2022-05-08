@@ -14,6 +14,7 @@ export interface ITransaction extends Document {
   groupId?: Schema.Types.ObjectId | string;
   actionAt: number;
   isIgnore: boolean;
+  lendId?: mongoose.Types.ObjectId;
 
   createdBy: Schema.Types.ObjectId | string;
   updateAt: number;
@@ -34,6 +35,7 @@ export const TransactionSchema = new Schema({
   status: { type: Number, default: CommonStatus.ACTIVE },
   groupId: { type: Schema.Types.ObjectId, ref: 'Group' },
   actionAt: { type: Number, default: Date.now },
+  lendId: { type: mongoose.Types.ObjectId, ref: 'Lend' },
 
   createdBy: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
   updateBy: { type: Schema.Types.ObjectId, required: true, ref: 'User' },

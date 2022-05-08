@@ -4,7 +4,7 @@ import { LendModel } from '$models/LendModel';
 import { SourceModel } from '$models/SourceModel';
 import { TransactionModel } from '$models/TransactionModel';
 import { CommonStatus, ErrorCode, TransactionType } from '$types/enum';
-import { Types } from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { getSourceBalance } from './transaction.service';
 
 interface ICreatedLend {
@@ -40,6 +40,7 @@ export async function createLend(userId: string, params: ICreatedLend) {
     await Source.save();
   }
 
+  const rs = await lend.save();
   // TODO: handle lend/debt transaction
   const transaction = new TransactionModel({
     createdBy: userId,
@@ -52,10 +53,10 @@ export async function createLend(userId: string, params: ICreatedLend) {
     actionAt: params.actionAt,
     money: params.type === TransactionType.DEBT ? params.money : -params.money,
     sourceId: params.sourceId || null,
+    lendId: rs._id,
   });
   await transaction.save();
 
-  const rs = await lend.save();
   return rs.toObject();
 }
 
@@ -85,21 +86,13 @@ interface ICollectLend {
 export async function collectLendOrDebt(userId: string, lendId: string, params: ICollectLend) {
   const lend = await LendModel.findOne({
     userId: new Types.ObjectId(userId),
-    lendId: new Types.ObjectId(lendId),
+    _id: new Types.ObjectId(lendId),
     status: CommonStatus.ACTIVE,
   });
 
   if (!lend) {
     throw error(ErrorCode.Lend_Not_Found);
   }
-
-  const lendHistory = new LendHistoryModel({
-    lendId: new Types.ObjectId(lendId),
-    status: CommonStatus.ACTIVE,
-    money: params.money,
-    remainAmount: lend.money - params.money,
-    description: params.description,
-  });
 
   if (params.sourceId) {
     const Source = await SourceModel.findOne({
@@ -132,15 +125,16 @@ export async function collectLendOrDebt(userId: string, lendId: string, params: 
     type: lend.type,
     description: params.description,
     actionAt: params.actionAt,
-    money: lend.type === TransactionType.LEND ? params.money : -params.money,
+    money: lend.type === TransactionType.LEND ? -params.money : params.money,
     sourceId: params.sourceId,
+    lendId: lend._id,
   });
 
   await transaction.save();
 
-  lend.money = lend.money - params.money;
+  lend.money = lend.money + params.money;
+  lend.total = lend.total < lend.money ? lend.money : lend.total;
 
-  await lendHistory.save();
   await lend.save();
 }
 
@@ -160,23 +154,24 @@ export async function listLend(userId: string, params) {
     query.where({ updateAt: { $lt: Number(params.takeAfter) } });
   }
 
-  const results = await query.limit(params.pageSize).sort({ updateAt: -1 }).lean();
+  const results = await query.sort({ updateAt: -1 }).lean();
 
   return { results, pageSize: params.pageSize, hasMore: results.length === params.pageSize };
 }
 
 export async function detailsLend(userId: string, lendId: string) {
   const lend = await LendModel.findOne({
+    _id: new Types.ObjectId(lendId),
     userId: new Types.ObjectId(userId),
-    lendId: new Types.ObjectId(lendId),
     status: CommonStatus.ACTIVE,
   }).lean();
 
   if (lend) {
-    const lendHistory = await LendHistoryModel.find({
+    const lendHistory = await TransactionModel.find({
       lendId: new Types.ObjectId(lendId),
+      status: CommonStatus.ACTIVE,
     })
-      .sort({ createdAt: -1 })
+      .sort({ actionAt: -1, createdAt: -1 })
       .lean();
 
     Object.assign(lend, { history: lendHistory });
