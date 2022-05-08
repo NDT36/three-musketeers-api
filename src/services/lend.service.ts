@@ -105,11 +105,11 @@ export async function collectLendOrDebt(userId: string, lendId: string, params: 
     Source.balance = await getSourceBalance(params.sourceId);
 
     if (lend.type === TransactionType.LEND) {
-      Source.balance = Source.balance + params.money;
+      Source.balance = Source.balance - params.money;
     }
 
     if (lend.type === TransactionType.DEBT) {
-      Source.balance = Source.balance - params.money;
+      Source.balance = Source.balance + params.money;
     }
 
     await Source.save();
