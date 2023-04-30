@@ -12,6 +12,10 @@ Controller.post('/login', [], async (req: Request) => {
   return results;
 });
 
+Controller.get('/login/test', [], async (req: Request) => {
+  return req.headers;
+});
+
 Controller.post('/login-social', [], async (req: Request) => {
   validate(loginSocialSchema, req.body);
   const results = await loginBySocial(req.body);
